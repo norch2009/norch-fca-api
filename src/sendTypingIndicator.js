@@ -6,7 +6,7 @@ var utils = require("../utils");
 // @NethWs3Dev
 
 module.exports = function (defaultFuncs, api, ctx) {
-	return async function sendTypingIndicatorV2(sendTyping, threadID, callback) {
+	return async function sendTypingIndicator(sendTyping, threadID, callback) {
 		let count_req = 0
 		var wsContent = {
 			app_id: 2220391788200892,
