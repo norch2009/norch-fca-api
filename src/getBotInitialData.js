@@ -20,15 +20,13 @@ module.exports = (defaultFuncs, api, ctx) => {
 
     utils.log("Fetching account info...");
 
-    try {
-      const res = await defaultFuncs.get(
-        `https://www.facebook.com/profile.php?id=${ctx.userID}`,
-        ctx.jar,
-        null,
-        ctx,
-        { customUserAgent: utils.windowsUserAgent }
-      );
-
+    defaultFuncs.get(
+      `https://www.facebook.com/profile.php?id=${ctx.userID}`,
+      ctx.jar,
+      null,
+      ctx,
+      { customUserAgent: utils.windowsUserAgent }
+    ).then((res) => {
       const profileMatch = res.body.match(/"CurrentUserInitialData",\[\],\{(.*?)\},(.*?)\]/);
       if (profileMatch && profileMatch[1]) {
         const accountJson = JSON.parse(`{${profileMatch[1]}}`);
@@ -36,15 +34,13 @@ module.exports = (defaultFuncs, api, ctx) => {
         accountJson.uid = accountJson.USER_ID;
         delete accountJson.NAME;
         delete accountJson.USER_ID;
-        return callback(null, accountJson);
+        return callback(null, { ...accountJson });
       } else {
         return callback(null, {
-          error: "❌ Failed to parse profile. Maybe limited or spam blocked. Try again later."
+          error: "⚠️ Something went wrong. Try again later or check your cookies."
         });
       }
-    } catch (err) {
-      return callback(err);
-    }
+    }).catch((err) => callback(err));
 
     return returnPromise;
   };
